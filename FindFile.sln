@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindFile", "FindFile\FindFile.csproj", "{274E9FF1-C56D-4F07-8075-B3F7AFAE9AC4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{274E9FF1-C56D-4F07-8075-B3F7AFAE9AC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{274E9FF1-C56D-4F07-8075-B3F7AFAE9AC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{274E9FF1-C56D-4F07-8075-B3F7AFAE9AC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{274E9FF1-C56D-4F07-8075-B3F7AFAE9AC4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0BC4E0DF-8C62-46DA-8BE0-01CF22CB9CE7}
+	EndGlobalSection
+EndGlobal
