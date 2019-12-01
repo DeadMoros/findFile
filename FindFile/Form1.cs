@@ -199,7 +199,8 @@ namespace FindFile
         {
             if (InvokeRequired)
             {
-                button2.Invoke(new Action(() => { button2.Text = "Начать поиск";
+                button2.Invoke(new Action(() => { 
+                    button2.Text = "Начать поиск";
                     button2.Click += startFind;
                     button2.Click -= stopFind;
                 }
@@ -214,6 +215,7 @@ namespace FindFile
                     }));
 
                 }
+                button3.Invoke(new Action(() => { button3.Enabled = false; }));
 
             }
             else
@@ -223,11 +225,13 @@ namespace FindFile
                 button2.Click -= stopFind;
                 if (button3.Text == "Продолжить")
                 {
+
                     button3.Text = "Приостановить";
                     button3.Click += pauseFind;
                     button3.Click -= continueFind;
-                }
 
+                }
+                button3.Enabled = false;
             }
             timer1.Stop();
         }

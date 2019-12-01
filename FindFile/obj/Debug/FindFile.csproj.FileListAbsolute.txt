@@ -35,3 +35,12 @@ C:\Users\Pavel\Desktop\findFile-master\FindFile\obj\Debug\FindFile.Properties.Re
 C:\Users\Pavel\Desktop\findFile-master\FindFile\obj\Debug\FindFile.csproj.GenerateResource.cache
 C:\Users\Pavel\Desktop\findFile-master\FindFile\obj\Debug\FindFile.exe
 C:\Users\Pavel\Desktop\findFile-master\FindFile\obj\Debug\FindFile.pdb
+C:\Users\Pavel\Desktop\download\findFile\FindFile\bin\Debug\FindFile.exe.config
+C:\Users\Pavel\Desktop\download\findFile\FindFile\bin\Debug\FindFile.exe
+C:\Users\Pavel\Desktop\download\findFile\FindFile\bin\Debug\FindFile.pdb
+C:\Users\Pavel\Desktop\download\findFile\FindFile\obj\Debug\FindFile.csprojAssemblyReference.cache
+C:\Users\Pavel\Desktop\download\findFile\FindFile\obj\Debug\FindFile.Form1.resources
+C:\Users\Pavel\Desktop\download\findFile\FindFile\obj\Debug\FindFile.Properties.Resources.resources
+C:\Users\Pavel\Desktop\download\findFile\FindFile\obj\Debug\FindFile.csproj.GenerateResource.cache
+C:\Users\Pavel\Desktop\download\findFile\FindFile\obj\Debug\FindFile.exe
+C:\Users\Pavel\Desktop\download\findFile\FindFile\obj\Debug\FindFile.pdb
