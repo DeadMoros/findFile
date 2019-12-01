@@ -25,7 +25,8 @@ namespace FindFile
         private List<string> allPath;  //Пути папок
         TreeNode NODE;
         string nameOfFile = "";
-
+        int amountOfFiles = 0;
+        int amountOfFilesFound = 0;
         private void checkBox1_CheckedChanged(object sender, EventArgs e) => textBox3.Enabled = !textBox3.Enabled;
 
 
@@ -37,18 +38,22 @@ namespace FindFile
                 DirectoryInfo df = new DirectoryInfo(allPath.Last());
                 var files = df.GetFiles();
                 var folders = df.GetDirectories();
+
                 foreach (var folder in folders)
                 {
                     allPath.Add(folder.FullName);
-                    TreeNode t = new TreeNode(folder.Name);
-                    NODE.Nodes.Add(t);
+                    TreeNode node = new TreeNode(folder.Name);
+                    NODE.Nodes.Add(node);
                     NODE = NODE.LastNode;
                     findFiles();
-                    if (NODE.Nodes.Count != 0) NODE = NODE.Parent;
-                    else
+                    if (NODE.Nodes.Count == 0)
                     {
                         NODE = NODE.Parent;
-                        NODE.Nodes.Remove(t);
+                        NODE.Nodes.Remove(node);
+                    }
+                    else
+                    {
+                        if(NODE.Parent!=null)NODE = NODE.Parent;
                     }
 
                     allPath.RemoveAt(allPath.Count - 1);
@@ -56,34 +61,81 @@ namespace FindFile
                 foreach (var file in files)
                 {
                     label6.Invoke(new Action(() => label6.Text = file.Name));
-
+                    label10.Invoke(new Action(() => { label10.Text = (++amountOfFiles).ToString(); }));
                     if(StringExtension.Contains(file.Name,nameOfFile, StringComparison.OrdinalIgnoreCase))
                     {
                         if (checkBox1.Checked)
                         {
-                            string allText = File.ReadAllText(file.FullName);
+                            StreamReader SR = File.OpenText(file.FullName);
+                            string oneLine;
+                            while ((oneLine = SR.ReadLine()) != null)
+                            {
 
-                            if (StringExtension.Contains(allText,textBox3.Text,StringComparison.OrdinalIgnoreCase)) {
-                                TreeNode t = new TreeNode(file.Name);
+                                if (StringExtension.Contains(oneLine, textBox3.Text, StringComparison.OrdinalIgnoreCase))
+                                {                                                                                                            ////// Добавление в результат если нашли по содержимому
+                                    label12.Invoke(new Action(() => label12.Text = (++amountOfFilesFound).ToString()));
+                                    TreeNode node = new TreeNode(file.Name);                                                       
+                                    NODE.Nodes.Add(node);
+                                    TreeNode mainNode = treeView1.Nodes[0];
+                                    try
+                                    {
+                                        while (NODE.Parent.Text != textBox1.Text) NODE = NODE.Parent;
+                                    }
+                                    catch (Exception)
+                                    {
 
-                                NODE.Nodes.Add(t);
+                                    }
+                                    findPlaceToInsertNode(ref mainNode, ref NODE);
 
+                                    insertNode(mainNode, NODE);
+                                    try
+                                    {
+                                        while (NODE.LastNode.Nodes.Count != 0) NODE = NODE.LastNode;
+                                    }
+                                    catch (Exception)
+                                    {
 
-                                listBox1.Invoke(new Action(() => listBox1.Items.Add(file.FullName)));
+                                    }
+                                    if (NODE.Nodes.Count == 0) NODE = NODE.Parent;
+
+                                    listBox1.Invoke(new Action(() => listBox1.Items.Add(file.FullName)));
+                                    break;
+                                }
                             }
 
                         }
                         else
                         {
-                            TreeNode t = new TreeNode(file.Name);
-                            NODE.Nodes.Add(t);
+                            label12.Invoke(new Action(() => label12.Text = (++amountOfFilesFound).ToString()));
+                            TreeNode node = new TreeNode(file.Name);                                                       ////добавление в результат если нашли по имени
+                            NODE.Nodes.Add(node);
+                            TreeNode mainNode = treeView1.Nodes[0];
+                            try
+                            {
+                                while (NODE.Parent.Text != textBox1.Text) NODE = NODE.Parent;
+                            }
+                            catch (Exception)
+                            {
+
+                            }
+                            findPlaceToInsertNode(ref  mainNode,   ref NODE);
+
+                            insertNode( mainNode, NODE);
+                            try
+                            {
+                                while (NODE.LastNode.Nodes.Count != 0) NODE = NODE.LastNode;
+                            }
+                            catch (Exception)
+                            {
+
+                            }
+                            if (NODE.Nodes.Count == 0) NODE = NODE.Parent;   
+
                             listBox1.Invoke(new Action(() => listBox1.Items.Add(file.FullName)));
                         }
                     }
 
                 }
-
-
                 if (allPath.Count == 1) MessageBox.Show("Поиск завершен!", "Поиск", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             }
@@ -100,23 +152,53 @@ namespace FindFile
                 if (allPath.Count == 1)
                 {
                     resetStartButton();
-
-                    treeView1.Invoke(new Action(() => treeView1.Nodes.Add(NODE)));
-
+                    switchEnableUI();
                 }
-
 
             }
         }
 
+        void findPlaceToInsertNode(ref TreeNode mainTree,ref TreeNode NODE)
+        {
+            TreeNode CurrentNode = null;
+            foreach (TreeNode TN in mainTree.Nodes)
+            {
+                if (TN.Text == NODE.Text) CurrentNode = TN;
+            }
+            if (CurrentNode!= null)
+            {
+                mainTree = CurrentNode;
+                NODE = NODE.LastNode;
+                findPlaceToInsertNode(ref mainTree,ref NODE);
+            } 
 
+        }
+
+        void insertNode(TreeNode mainTree, TreeNode NODE)
+        {
+            try
+            {
+                while (NODE.Nodes.Count != 0)
+                {
+                    TreeNode newFolder = new TreeNode(NODE.Text);
+                    Invoke(new Action(() => mainTree.Nodes.Add(newFolder)));
+                    NODE = NODE.LastNode;
+                    mainTree = mainTree.LastNode;
+                }
+            }
+            catch(Exception)
+            {
+
+            }
+            Invoke(new Action(()=>mainTree.Nodes.Add(new TreeNode(NODE.Text))));
+
+        }
        
 
         void resetStartButton()
         {
             if (InvokeRequired)
             {
-                button3.Invoke(new Action(() => button3.Enabled = !button3.Enabled));
                 button2.Invoke(new Action(() => { button2.Text = "Начать поиск";
                     button2.Click += startFind;
                     button2.Click -= stopFind;
@@ -136,7 +218,6 @@ namespace FindFile
             }
             else
             {
-                button3.Enabled = !button3.Enabled;
                 button2.Text = "Начать поиск";
                 button2.Click += startFind;
                 button2.Click -= stopFind;
@@ -151,15 +232,18 @@ namespace FindFile
             timer1.Stop();
         }
 
+
         void startFind(object sender, EventArgs e) //начало поиска
         {
+            switchEnableUI();
+            amountOfFilesFound = 0;
+            amountOfFiles = 0;
+            label12.Text = "0";
             listBox1.Items.Clear();
             treeView1.Nodes.Clear();
-            textBox3.ReadOnly = true;
-
+            treeView1.Nodes.Add(new DirectoryInfo(textBox1.Text).Name);
             allPath = new List<string>();
             NODE = new TreeNode(new DirectoryInfo(textBox1.Text).Name);
-
             allPath.Add(textBox1.Text);
             button3.Enabled = !button3.Enabled;
             button2.Text = "Остановить поиск";
@@ -179,7 +263,7 @@ namespace FindFile
         private void stopFind(object sender, EventArgs e) //конец поиска
         {
             resetStartButton();
-            textBox3.ReadOnly = false;
+            switchEnableUI();
             label6.Text = "";
             label7.Text = "00:00:00";
             try
@@ -193,7 +277,6 @@ namespace FindFile
             try
             {
                 while (NODE.Parent != null) NODE = NODE.Parent;
-                treeView1.Invoke(new Action(() => treeView1.Nodes.Add(NODE)));
             }
             catch (Exception)
             {
@@ -206,8 +289,6 @@ namespace FindFile
             button3.Click -= pauseFind;
             button3.Click += continueFind;
 
-            while (NODE.Parent != null) NODE= NODE.Parent;
-            treeView1.Invoke(new Action(() => treeView1.Nodes.Add(NODE)));
             timer1.Stop();
             pauseTime = DateTime.Now;
 
@@ -220,24 +301,20 @@ namespace FindFile
             button3.Click += pauseFind;
             button3.Click -= continueFind;
             differentInTime += (DateTime.Now - pauseTime);
-            NODE = treeView1.TopNode;
-            while (NODE.Nodes.Count != 0)  NODE = NODE.LastNode;
             
-            treeView1.Nodes.Clear();
             timer1.Start();
             findThread.Resume();
         }
-        private TreeNode copyNode(TreeNode tn)
-        {
-            if (tn.Nodes == null) return null;
 
-            foreach (var nod in tn.Nodes)
-            {
-                TreeNode node = nod as TreeNode;
-                return copyNode(node);
-            }
-            return null;
+        void switchEnableUI()
+        {
+            textBox1.Invoke(new Action(() => { textBox1.ReadOnly = !textBox1.ReadOnly; }));
+            textBox2.Invoke(new Action(() => { textBox2.ReadOnly = !textBox2.ReadOnly; }));
+            checkBox1.Invoke(new Action(() => { checkBox1.Enabled = !checkBox1.Enabled; }));
+            textBox3.Invoke(new Action(() => { textBox3.ReadOnly = !textBox3.ReadOnly; }));
+            button1.Invoke(new Action(() => { button1.Enabled = !button1.Enabled; }));
         }
+
         private void button1_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fd = new FolderBrowserDialog();
@@ -253,6 +330,7 @@ namespace FindFile
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
             try
             {
                 using (StreamReader sr = new StreamReader("info.dll", Encoding.UTF8))
@@ -271,12 +349,18 @@ namespace FindFile
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            try
+            {
+                findThread.Suspend();
+            }
+            catch (Exception) { }
             using (StreamWriter sw = new StreamWriter("info.dll", false))
             {
                 sw.WriteLine(textBox1.Text);
                 sw.WriteLine(textBox2.Text);
                 sw.WriteLine(checkBox1.Checked);
                 sw.WriteLine(textBox3.Text);
+                
             }
         }
 
